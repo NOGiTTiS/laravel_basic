@@ -1,7 +1,10 @@
 <?php
 
+use App\Http\Controllers\BackOfficeController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserController;
+use App\Http\Middleware\EnsureTokenIsValid;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -79,6 +82,7 @@ Route::get('/target', function () {
     return response()->json(['message' => 'Target']);
 });
 
+// Route with Controller Customer
 $customerController = CustomerController::class;
 
 Route::get('/customers', [$customerController, 'list']);
@@ -87,9 +91,27 @@ Route::post('/customers', [$customerController, 'create']);
 Route::put('/customers/{id}', [$customerController, 'update']);
 Route::delete('/customers/{id}', [$customerController, 'delete']);
 
+// Route with Controller User
 Route::get('/users/list', [UserController::class, 'list']);
 Route::get('/users/form', [UserController::class, 'form']);
 Route::post('/users', [UserController::class, 'create']);
 Route::get('/users/{id}', [UserController::class, 'edit']);
 Route::put('/users/{id}', [UserController::class, 'update']);
 Route::delete('/users/remove/{id}', [UserController::class, 'remove']);
+
+// user sign in
+Route::get('/user/signIn', [UserController::class, 'signIn']);
+Route::post('/user/signInProcess', [UserController::class, 'signInProcess']);
+Route::get('/user/signOut', [UserController::class, 'signOut'])->middleware(EnsureTokenIsValid::class);
+Route::get('/user/info', [UserController::class, 'info'])->middleware(EnsureTokenIsValid::class);
+
+// backoffice
+Route::get('/backoffice', [BackOfficeController::class, 'index'])->middleware(EnsureTokenIsValid::class);
+
+// product
+Route::get('/product/list', [ProductController::class, 'list']);
+Route::get('/product/form', [ProductController::class, 'form']);
+Route::post('/product', [ProductController::class, 'save']);
+Route::get('/product/{id}', [ProductController::class, 'edit']);
+Route::put('/product/{id}', [ProductController::class, 'update']);
+Route::get('/product/remove/{id}', [ProductController::class, 'remove']);
